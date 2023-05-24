@@ -47,6 +47,9 @@ class Reparacion
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $carga = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -180,6 +183,18 @@ class Reparacion
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getCarga(): ?string
+    {
+        return $this->carga;
+    }
+
+    public function setCarga(string $carga): self
+    {
+        $this->carga = $carga;
 
         return $this;
     }
