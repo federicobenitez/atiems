@@ -60,7 +60,7 @@ final class UserFactory extends ModelFactory
             'password' => 'adminpass',
             'phoneNumber' => self::faker()->randomNumber(),
             'roles' => [
-                'ROLE_USER',
+                'ROLE_ADMIN',
             ],
             'username' => 'admin',
         ];
