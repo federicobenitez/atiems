@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\User;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
@@ -69,13 +70,15 @@ class UserCrudController extends AbstractCrudController
             ] );
 
         yield NumberField::new('phoneNumber')
-            ->onlyOnForms();
+            ->setNumberFormat('%d');
         yield ChoiceField::new('roles')
             ->setChoices(array_combine($roles, $roles))
             ->allowMultipleChoices()
             ->renderExpanded()
             ->renderAsBadges();
-        yield DateField::new('createdAt');
+        yield DateField::new('createdAt')
+            ->hideOnIndex()
+            ->setDisabled(true);
         //TextEditorField::new('description'),
         
     }

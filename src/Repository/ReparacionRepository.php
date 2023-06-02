@@ -39,6 +39,16 @@ class ReparacionRepository extends ServiceEntityRepository
         }
     }
 
+    public function findLatest(): array
+    {
+        return $this->createQueryBuilder('reparacion')
+            ->orderBy('reparacion.createdAt', 'DESC')
+            ->setMaxResults(4)
+            ->getQuery()
+            ->getResult();
+    }
+
+
 //    /**
 //     * @return Reparacion[] Returns an array of Reparacion objects
 //     */

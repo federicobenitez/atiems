@@ -39,6 +39,15 @@ class ServicioRepository extends ServiceEntityRepository
         }
     }
 
+    public function findLatest(): array
+    {
+        return $this->createQueryBuilder('servicio')
+            ->orderBy('servicio.createdAt', 'DESC')
+            ->setMaxResults(4)
+            ->getQuery()
+            ->getResult();
+    }
+
 //    /**
 //     * @return Servicio[] Returns an array of Servicio objects
 //     */

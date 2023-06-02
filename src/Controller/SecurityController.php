@@ -16,12 +16,11 @@ class SecurityController extends AbstractController
             'error' => $authenticationUtils->getLastAuthenticationError(),
         ]);
     }
-    /**
-     * @Route("/logout")
-     */
+
+    #[Route('/logout', name:'app_logout')]
     public function logout()
     {
-        throw new \Exception('logout() should never be reached');
+        throw new \Exception('Error al intentar salir del sistema');
         return $this->render('inicio/index.html.twig');
     }
 }

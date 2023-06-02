@@ -1,1 +1,38 @@
 {% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block page_title %}
+    <div class="centrado">
+        <center>Area de Tecnología de la Información, Estadística y Mantenimiento de Sistemas - 
+        Sistema de Cargas</center>
+        <hr>
+    </div>
+{%  endblock %}
+
+{% block main %}
+
+    <div class="row">
+        <div class="col-6">
+            <h3>Últimas Reparaciones</h3>
+            <ul>
+                {% for reparacion in ultimasReparaciones %}
+                    <li>
+                        <a>{{ reparacion.departamentoArea }}</a>
+                        <br>- {{ reparacion.createdAt|date }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="col-6">
+            <h3>Últimos Servicios</h3>
+            <ul>
+                {% for servicio in ultimosServicios %}
+                    <li>
+                        <a>{{ servicio.departamentoArea }}</a>
+                        <br>- {{ servicio.createdAt|date }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
