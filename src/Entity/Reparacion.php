@@ -32,7 +32,7 @@ class Reparacion
     #[ORM\Column(length: 255)]
     private ?string $asignadoA = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $fechaInicio = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]

@@ -4,6 +4,7 @@ namespace App\Factory;
 
 use App\Entity\Reparacion;
 use App\Repository\ReparacionRepository;
+use SebastianBergmann\Type\FalseType;
 use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;
 use Zenstruck\Foundry\RepositoryProxy;
@@ -48,15 +49,15 @@ final class ReparacionFactory extends ModelFactory
     {
         
         return [
-            'agente' => self::faker()->text(255),
-            'asignadoA' => self::faker()->text(255),
-            'carga' => self::faker()->text(255),
+            'agente' => self::faker()->text(100),
+            'asignadoA' => self::faker()->text(100),
+            'carga' => self::faker()->text(100),
             'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
-            'departamentoArea' => self::faker()->text(255),
-            'equipo' => self::faker()->text(255),
-            'estado' => self::faker()->text(255),
+            'departamentoArea' => self::faker()->text(100),
+            'equipo' => self::faker()->text(80),
+            'estado' => 'sin revisar',
             'fechaInicio' => self::faker()->dateTime(),
-            'notificado' => self::faker()->text(255),
+            'notificado' => 'no'
         ];
     }
 

@@ -22,12 +22,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 class DashboardController extends AbstractDashboardController
 {
     private ReparacionRepository $reparacionRepository;
-    private ServicioRepository $servicionRepository;
+    private ServicioRepository $servicioRepository;
 
     public function __construct(ReparacionRepository $reparacionRepository, ServicioRepository $servicioRepository)
     {
         $this->reparacionRepository = $reparacionRepository;
-        $this->servicionRepository = $servicioRepository;
+        $this->servicioRepository = $servicioRepository;
     }
 
     #[IsGranted('ROLE_USER')]
@@ -35,7 +35,7 @@ class DashboardController extends AbstractDashboardController
     public function index(): Response
     {
         $ultimasReparaciones = $this->reparacionRepository->findLatest();
-        $ultimosServicios = $this->servicionRepository->findLatest();
+        $ultimosServicios = $this->servicioRepository->findLatest();
 
         return $this->render('admin/index.html.twig',[
             'ultimasReparaciones' => $ultimasReparaciones,
@@ -46,18 +46,19 @@ class DashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('<center>ATIEMS</center>')
+            ->setTitle('<center><img src="img/icono.png"></src></center>')
             ->setFaviconPath('img/icono.png');
     
     }
 
     public function configureMenuItems(): iterable
     {   
-        yield MenuItem::section('<hr>');
+        //yield MenuItem::section('<hr>');
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-book');
 
         
-        yield MenuItem::linkToCrud('Usuarios', 'fa fa-users', User::class);
+        yield MenuItem::linkToCrud('Usuarios', 'fa fa-users', User::class)
+            ->setPermission('ROLE_ADMIN');
         yield MenuItem::linkToCrud('Reparaciones', 'fa fa-wrench', Reparacion::class);
         yield MenuItem::linkToCrud('Servicios', 'fa fa-bell-concierge', Servicio::class);
         yield MenuItem::linkToCrud('Préstamos', 'fa fa-right-long', Prestamo::class);
@@ -77,5 +78,13 @@ class DashboardController extends AbstractDashboardController
     public function configureAssets(): Assets
     {
         return parent::configureAssets();
+    }
+
+    public function configureCrud(): Crud
+    {
+        return parent::configureCrud()
+            ->setDefaultSort([
+                'id' => 'DESC'
+            ]);
     }
 }

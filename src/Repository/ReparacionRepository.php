@@ -43,7 +43,7 @@ class ReparacionRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('reparacion')
             ->orderBy('reparacion.createdAt', 'DESC')
-            ->setMaxResults(4)
+            ->setMaxResults(5)
             ->getQuery()
             ->getResult();
     }
