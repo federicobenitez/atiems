@@ -121,8 +121,15 @@ class ServicioCrudController extends AbstractCrudController
 
     public function createEntity(string $entityFqcn)
     {
+        $user = $this->getUser();
+
+        if(!$user instanceof User)
+        {
+            throw new \LogicException('Currently logged in user is not an instance of User!');
+        }
+
         $servicio = new Servicio();
-        $servicio->setCarga($this->getUser()->getUsername());
+        $servicio->setCarga($user->getUsername());
 
         return $servicio;
     }

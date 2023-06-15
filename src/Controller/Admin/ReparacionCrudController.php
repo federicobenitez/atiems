@@ -7,10 +7,8 @@ use App\Entity\Reparacion;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
-use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
@@ -25,7 +23,6 @@ class ReparacionCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        $user = $this->getUser();
 
         yield IdField::new('id')
             ->onlyOnIndex();
@@ -73,9 +70,7 @@ class ReparacionCrudController extends AbstractCrudController
             ->hideOnIndex()
             ->setDisabled(true);
         yield TextField::new('carga')
-            
             ->hideOnIndex()
-            //->hideOnForm()
             ->setDisabled(true);
     }
 
@@ -125,8 +120,14 @@ class ReparacionCrudController extends AbstractCrudController
 
     public function createEntity(string $entityFqcn)
     {
+        $user = $this->getUser();
+
+        if (!$user instanceof User){
+            throw new \LogicException('Currently logged in user is not an instance of User!');
+        }
+
         $reparacion = new Reparacion();
-        $reparacion->setCarga($this->getUser()->getUsername());
+        $reparacion->setCarga($user->getUsername());
 
         return $reparacion;
     }
