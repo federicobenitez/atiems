@@ -3,24 +3,30 @@
 namespace App\Controller\Admin;
 
 use App\Entity\User;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use Symfony\Component\Form\FormBuilderInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TelephoneField;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TelephoneField;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserCrudController extends AbstractCrudController
@@ -35,6 +41,29 @@ class UserCrudController extends AbstractCrudController
     public static function getEntityFqcn(): string
     {
         return User::class;
+    }
+
+    //funcion para que solo el admin pueda administrar los usuarios
+    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
+    {
+        $queryBuilder = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+
+        if ($this->isGranted('ROLE_ADMIN')) {
+            return $queryBuilder;
+        }
+
+        $user = $this->getUser();
+
+        if(!$user instanceof User)
+        {
+            throw new \LogicException('Currently logged in user is not an instance of User!');
+        }
+
+        return $queryBuilder
+            ->andWhere('entity.id = :id')
+            ->setParameter('id', $user->getId());
+
+
     }
 
     
@@ -53,8 +82,18 @@ class UserCrudController extends AbstractCrudController
                    ->setFormType( RepeatedType::class )
                    ->setFormTypeOptions( [
                        'type'            => PasswordType::class,
-                       'first_options'   => [ 'label' => 'Nueva contraseña' ],
-                       'second_options'  => [ 'label' => 'Repetir contraseña' ],
+                       'first_options'   => [ 
+                            'label' => 'Nueva contraseña',
+                            'row_attr' => [
+                                'class' => 'col-md-6',
+                            ],
+                        ],
+                       'second_options'  => [ 
+                            'label' => 'Repetir contraseña',
+                            'row_attr' => [
+                                'class' => 'col-md-6',
+                            ],
+                        ],
                        'error_bubbling'  => true,
                        'invalid_message' => 'Las contraseñas no coinciden.',
                    ]);
@@ -62,8 +101,18 @@ class UserCrudController extends AbstractCrudController
             ->setFormType( RepeatedType::class )
             ->setFormTypeOptions( [
                 'type'            => PasswordType::class,
-                'first_options'   => [ 'label' => 'Nueva contraseña' ],
-                'second_options'  => [ 'label' => 'Repetir contraseña' ],
+                'first_options'   => [ 
+                    'label' => 'Nueva contraseña',
+                    'row_attr' => [
+                        'class' => 'col-md-6',
+                    ],
+                ],
+                'second_options'  => [ 
+                    'label' => 'Repetir contraseña',
+                    'row_attr' => [
+                        'class' => 'col-md-6',
+                    ],
+                ],
                 'error_bubbling'  => true,
                 'invalid_message' => 'Las contraseñas no coinciden.',
             ]);
@@ -78,7 +127,6 @@ class UserCrudController extends AbstractCrudController
             ->setLabel('Creado')
             ->hideOnIndex()
             ->setDisabled(true);
-        //TextEditorField::new('description'),
         
     }
 

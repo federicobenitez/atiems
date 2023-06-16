@@ -57,8 +57,8 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-book');
 
         
-        yield MenuItem::linkToCrud('Usuarios', 'fa fa-users', User::class)
-            ->setPermission('ROLE_ADMIN');
+        yield MenuItem::linkToCrud('Usuarios', 'fa fa-users', User::class);
+            //->setPermission('ROLE_ADMIN');
         yield MenuItem::linkToCrud('Reparaciones', 'fa fa-wrench', Reparacion::class);
         yield MenuItem::linkToCrud('Servicios', 'fa fa-bell-concierge', Servicio::class);
         yield MenuItem::linkToCrud('Préstamos', 'fa fa-right-long', Prestamo::class);

@@ -4,19 +4,36 @@ namespace App\Controller\Admin;
 
 use App\Entity\User;
 use App\Entity\Servicio;
-use App\Entity\Reparacion;
+use App\Service\CsvExporter;
 use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use Symfony\Component\HttpFoundation\RequestStack;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
+use EasyCorp\Bundle\EasyAdminBundle\Factory\FilterFactory;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
 class ServicioCrudController extends AbstractCrudController
 {
+    private AdminUrlGenerator $adminUrlGenerator;
+    private RequestStack $requestStack;
+
+    public function __construct(AdminUrlGenerator $adminUrlGenerator, RequestStack $requestStack)
+    {
+        $this->adminUrlGenerator = $adminUrlGenerator;
+        $this->requestStack = $requestStack;
+    }
+    
     public static function getEntityFqcn(): string
     {
         return Servicio::class;
@@ -132,6 +149,38 @@ class ServicioCrudController extends AbstractCrudController
         $servicio->setCarga($user->getUsername());
 
         return $servicio;
+    }
+
+    public function configureActions(Actions $actions): Actions
+    {
+        $exportAction = Action::new(('exportar'))
+            ->linkToUrl(function(){
+                $request = $this->requestStack->getCurrentRequest();
+
+                return $this->adminUrlGenerator->setAll($request->query->all())
+                    ->setAction('export')
+                    ->generateUrl();
+            })
+            ->createAsGlobalAction()
+            ->linkToCrudAction('export')
+            ->addCssClass('btn btn-success')
+            ->setIcon('fa fa-download');
+
+        return parent::configureActions($actions)
+            ->add(Crud::PAGE_INDEX, $exportAction);
+    }
+
+    public function export(AdminContext $context, CsvExporter $csvExporter)
+    {
+        $fields = FieldCollection::new($this->configureFields(Crud::PAGE_INDEX));
+        $filters = $this->container->get(FilterFactory::class)->create($context->getCrud()->getFiltersConfig(), $fields, $context->getEntity());
+        $queryBuilder = $this->createIndexQueryBuilder($context->getSearch(), $context->getEntity(), $fields, $filters);
+
+        return $csvExporter->createResponseFromQueryBuilder(
+            $queryBuilder,
+            $fields,
+            'servicios.csv'
+        );
     }
     
 }
