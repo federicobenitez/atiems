@@ -78,6 +78,8 @@ class PrestamoCrudController extends AbstractCrudController
                 ]))
             ->add('createdAt');
     }
+
+
     
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
@@ -123,7 +125,8 @@ class PrestamoCrudController extends AbstractCrudController
             ->setIcon('fa fa-download');
 
         return parent::configureActions($actions)
-            ->add(Crud::PAGE_INDEX, $exportAction);
+            ->add(Crud::PAGE_INDEX, $exportAction)
+            ->setPermission(Action::DELETE, 'ROLE_ADMIN');
     }
 
     public function export(AdminContext $context, CsvExporter $csvExporter)
